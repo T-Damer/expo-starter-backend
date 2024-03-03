@@ -1,12 +1,17 @@
 import 'module-alias/register'
 import 'source-map-support/register'
+import 'reflect-metadata'
 
 import runApp from '@/helpers/runApp'
-import runMongo from '@/helpers/mongo'
+import prismaClient from '@/helpers/prismaClient'
 
 void (async () => {
-  console.log('Starting mongo')
-  await runMongo()
-  console.log('Mongo connected')
+  console.log('starting server')
   await runApp()
 })()
+  .then(async () => await prismaClient.$disconnect())
+  .catch((e) => {
+    console.error(e)
+    prismaClient.$disconnect
+    process.exit(1)
+  })

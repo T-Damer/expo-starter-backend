@@ -1,0 +1,37 @@
+generator typegraphql {
+  provider = "typegraphql-prisma"
+  context = "p"
+  contextPrismaKey = "p"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+enum Role {
+  NORMAL
+  ADMIN
+}
+
+model User {
+  id       String @id @unique @default(cuid())
+  email    String @unique
+  password String
+  role     Role
+  Posts    Post[]
+}
+
+model Post {
+  id        String   @id @unique @default(cuid())
+  title     String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String?
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @unique
+}

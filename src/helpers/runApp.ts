@@ -1,32 +1,28 @@
-import Koa from 'koa'
-import Router from 'koa-router'
-import bodyParser from 'koa-bodyparser'
-import cors from '@koa/cors'
-import { Server } from 'http'
-import { bootstrapControllers } from 'amala'
-import { resolve } from 'path'
 import env from '@/helpers/env'
-
-const app = new Koa()
+import { createServer, Server } from 'http'
+import { createYoga } from 'graphql-yoga'
+import { resolvers } from '@generated/type-graphql'
+import { buildSchema } from 'type-graphql'
+import path from 'path'
 
 export default async function () {
-  const router = new Router()
-  await bootstrapControllers({
-    app,
-    basePath: '/',
-    controllers: [resolve(__dirname, '../controllers/*')],
-    disableVersioning: true,
-    router,
+  const schema = buildSchema({
+    resolvers,
+    validate: false,
+    emitSchemaFile: path.resolve(__dirname, 'schema.graphql'),
   })
-  app.use(cors({ origin: '*' }))
-  app.use(bodyParser())
-  app.use(router.routes())
-  app.use(router.allowedMethods())
+
+  const yoga = createYoga({
+    schema,
+  })
+
+  const server = createServer(yoga.requestListener)
+
   return new Promise<Server>((resolve, reject) => {
-    const connection = app
-      .listen(env.PORT)
+    const connection = server
+      .listen(env.SERVER_PORT)
       .on('listening', () => {
-        console.log(`HTTP is listening on ${env.PORT}`)
+        console.log(`HTTP is listening on https://localhost:${env.SERVER_PORT}`)
         resolve(connection)
       })
       .on('error', reject)
