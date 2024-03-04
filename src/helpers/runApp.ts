@@ -21,5 +21,5 @@ export default async function () {
   const server = createServer(yoga.requestListener)
 
   server.listen(env.SERVER_PORT)
-  console.log('Listening on http://localhost:', env.SERVER_PORT)
+  console.log('Listening on http://localhost:' + env.SERVER_PORT)
 }
