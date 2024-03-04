@@ -1,7 +1,5 @@
 generator typegraphql {
   provider = "typegraphql-prisma"
-  context = "p"
-  contextPrismaKey = "p"
 }
 
 generator client {

@@ -9,12 +9,12 @@
   "license": "MIT",
   "scripts": {
     "distribute": "yarn build && node dist/server.js",
-    "start": "tsc-watch --skipLibCheck --onSuccess 'node dist/server.js'",
-    "build": "tsc --skipLibCheck",
+    "start": "yarn generate-schema && tsc-watch --skipLibCheck --onSuccess 'node dist/server.js'",
+    "build": "yarn generate-schema && tsc --skipLibCheck",
     "pretty": "prettier --check src",
     "lint": "yarn pretty && eslint --max-warnings 0 ./src/",
     "lint-fix": "yarn eslint ./src/ --fix",
-    "generate-schema": "prisma format && prisma generate"
+    "generate-schema": "prisma format && prisma generate && prisma db push"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
