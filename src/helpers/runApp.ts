@@ -14,7 +14,17 @@ export default async function () {
   })
 
   const yoga = createYoga({
-    context: { prisma: prismaClient },
+    context: async ({ request }) => {
+      const token = request?.headers?.get('authorization')
+
+      if (!token) return { user: null }
+
+      const user = prismaClient.user.findFirst({
+        where: { authTokens: { has: token } },
+      })
+
+      return { user }
+    },
     schema,
   })
 

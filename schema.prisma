@@ -17,19 +17,40 @@ enum Role {
 }
 
 model User {
-  id       String @id @unique @default(cuid())
-  email    String @unique
-  password String
-  role     Role
-  Posts    Post[]
+  id         String   @id @unique @default(cuid())
+  email      String   @unique
+  password   String
+  role       Role
+  authTokens String[]
+  Posts      Post[]
+  Token      Token[]
+}
+
+model Token {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  type       TokenType
+  emailToken String?   @unique // Only used for short lived email tokens
+  valid      Boolean   @default(true)
+  expiration DateTime
+
+  // Relation fields
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+enum TokenType {
+  EMAIL // used as a short-lived token sent to the user's email
+  API
 }
 
 model Post {
   id        String   @id @unique @default(cuid())
-  title     String   @unique @db.VarChar(255)
+  title     String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   content   String?
   author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @unique
+  authorId  String
 }
